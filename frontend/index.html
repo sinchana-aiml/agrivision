@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="AgriVision is an automated, AI-driven crop damage assessment and geotagging portal designed for Pradhan Mantri Fasal Bima Yojana (PMFBY).">
+    <meta name="author" content="AgriVision Team">
+    <title>AgriVision | PMFBY AI Crop Damage Assessment & GIS Portal</title>
+    
+    <!-- Link Premium Style Sheet -->
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<div class="container">
+    <!-- =====================================================================
+         GOVERNMENT BRANDING & APPLICATION HEADER
+         ===================================================================== -->
+    <header>
+        <div class="gov-badge" id="gov-badge-id">
+            <span>🏛️</span> Ministry of Agriculture & Farmers Welfare | Government of India
+        </div>
+        <h1>AgriVision</h1>
+        <p class="subtitle">
+            Next-Generation AI Portal for Automated Crop Damage Verification & Secure PMFBY Insurance Claims
+        </p>
+    </header>
+
+    <!-- =====================================================================
+         METRIC STATS OVERVIEW CARDS
+         ===================================================================== -->
+    <section class="stats-grid" aria-label="Claims Dashboard Metrics">
+        <div class="stat-card">
+            <div class="stat-info">
+                <h3>Total Claims</h3>
+                <p id="metric-total">0</p>
+            </div>
+            <div class="stat-icon blue">📁</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-info">
+                <h3>Pending Audits</h3>
+                <p id="metric-pending">0</p>
+            </div>
+            <div class="stat-icon yellow">⏳</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-info">
+                <h3>Approved Payouts</h3>
+                <p id="metric-amount">₹0</p>
+            </div>
+            <div class="stat-icon green">💰</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-info">
+                <h3>Avg Crop Damage</h3>
+                <p id="metric-avg">0.0%</p>
+            </div>
+            <div class="stat-icon purple">📊</div>
+        </div>
+    </section>
+
+    <!-- =====================================================================
+         MAIN INTERACTIVE APP SECTIONS
+         ===================================================================== -->
+    <main class="app-grid">
+        
+        <!-- Farmer Image Upload Card -->
+        <section class="box" aria-labelledby="farmer-upload-title">
+            <div class="box-header">
+                <span class="icon">🌾</span>
+                <h2 id="farmer-upload-title">Farmer Upload Portal</h2>
+            </div>
+            
+            <div class="form-group">
+                <label for="crop">Select Cultivated Crop Species:</label>
+                <select id="crop">
+                    <option value="Tomato">Tomato (Solanum lycopersicum)</option>
+                    <option value="Pepper">Pepper (Capsicum annuum)</option>
+                    <option value="Wheat">Wheat (Triticum aestivum)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Upload Crop Leaf Photograph:</label>
+                <div class="drop-zone" id="drop-zone">
+                    <div class="drop-zone-icon">📤</div>
+                    <p class="drop-zone-text">Drag & drop your leaf image here</p>
+                    <p class="drop-zone-hint">or click to browse local files (Supports JPEG, PNG up to 10MB)</p>
+                    <input type="file" id="image" accept="image/*" aria-label="Upload crop image file">
+                </div>
+            </div>
+
+            <!-- Image Preview Area -->
+            <div class="preview-container" id="preview-container">
+                <img src="#" alt="Uploaded leaf preview" class="image-preview" id="image-preview">
+                <br>
+                <button type="button" class="remove-btn" onclick="resetUpload()">Remove Image</button>
+            </div>
+
+            <button type="button" class="btn btn-primary" id="analyze-btn" disabled>
+                <span>🔍</span> Analyze Crop Health
+            </button>
+
+            <!-- Analysis Output Panel (Populated via JS) -->
+            <div class="result-panel" id="result-panel">
+                <h3 class="result-title" id="panel-result-title">Analysis Output</h3>
+                <p class="result-detail" id="panel-result-details">Please upload an image to begin.</p>
+            </div>
+        </section>
+
+        <!-- secure GIS mapping indicator & location info -->
+        <section class="box" aria-labelledby="gis-title">
+            <div class="box-header">
+                <span class="icon">📍</span>
+                <h2 id="gis-title">Secure GPS Verification</h2>
+            </div>
+            
+            <div class="location-status">
+                <div class="loc-row">
+                    <span class="loc-label">Acquisition Status:</span>
+                    <span class="loc-value" id="gps-coords" style="color:#10b981;">Ready to Acquire</span>
+                </div>
+                <div class="loc-row">
+                    <span class="loc-label">GIS Latitude:</span>
+                    <span class="loc-value" id="gis-lat">Not Locked</span>
+                </div>
+                <div class="loc-row">
+                    <span class="loc-label">GIS Longitude:</span>
+                    <span class="loc-value" id="gis-lon">Not Locked</span>
+                </div>
+            </div>
+
+            <p class="subtitle" style="font-size:0.8rem; margin-bottom:1rem; text-align:left;">
+                * Coordinates are cryptographically stamped to prevent fraudulent insurance submissions. GPS acquisition occurs automatically during analysis.
+            </p>
+
+            <!-- Gorgeous Mock Satellite Map Interface -->
+            <div class="gis-map-mock">
+                <div class="gis-grid"></div>
+                <div class="gis-radar"></div>
+                <div class="gis-pin">📍</div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- =====================================================================
+         ADMINISTRATIVE OFFICER AUDIT BOARD
+         ===================================================================== -->
+    <section class="box" style="margin-bottom: 0;" aria-labelledby="dashboard-title">
+        <div class="box-header">
+            <span class="icon">💼</span>
+            <h2 id="dashboard-title">Officer Verification Board</h2>
+        </div>
+
+        <div class="table-responsive">
+            <table id="dashboard">
+                <thead>
+                    <tr>
+                        <th scope="col">Claim ID</th>
+                        <th scope="col">Crop Category</th>
+                        <th scope="col">Damage Ratio</th>
+                        <th scope="col">AI Classification</th>
+                        <th scope="col">GIS Geotag</th>
+                        <th scope="col">Audit Status</th>
+                        <th scope="col">Payout Fund</th>
+                        <th scope="col">Administrative Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Injected dynamically by dashboard.js -->
+                </tbody>
+            </table>
+        </div>
+    </section>
+</div>
+
+<!-- =====================================================================
+     SCRIPTS & SERVICES
+     ===================================================================== -->
+<script src="/js/location.js"></script>
+<script src="/js/upload.js"></script>
+<script src="/js/dashboard.js"></script>
+
+</body>
+</html>
