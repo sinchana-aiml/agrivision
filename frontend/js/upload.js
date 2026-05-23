@@ -13,7 +13,167 @@ document.addEventListener("DOMContentLoaded", () => {
     const resultPanel = document.getElementById("result-panel");
     const gpsStatusText = document.getElementById("gps-coords");
     
+    // Live Camera elements
+    const cameraZone = document.getElementById("camera-zone");
+    const cameraContainer = document.getElementById("camera-container");
+    const cameraStream = document.getElementById("camera-stream");
+    const captureBtn = document.getElementById("capture-btn");
+    const closeCameraBtn = document.getElementById("close-camera-btn");
+    const cameraErrorMsg = document.getElementById("camera-error-msg");
+    const uploadOptionsGrid = document.getElementById("upload-options-grid");
+
     let activeFile = null;
+    let activeStream = null;
+
+    // =====================================================================
+    // CAMERA EVENT HANDLERS & API LOGIC
+    // =====================================================================
+    if (cameraZone) {
+        cameraZone.addEventListener("click", () => {
+            startCamera();
+        });
+    }
+
+    if (captureBtn) {
+        captureBtn.addEventListener("click", () => {
+            capturePhoto();
+        });
+    }
+
+    if (closeCameraBtn) {
+        closeCameraBtn.addEventListener("click", () => {
+            stopCamera();
+        });
+    }
+
+    /**
+     * Starts the device camera stream and handles browser media access permissions.
+     */
+    async function startCamera() {
+        if (cameraErrorMsg) {
+            cameraErrorMsg.style.display = "none";
+            cameraErrorMsg.innerText = "";
+        }
+
+        try {
+            // Check browser mediaDevices support
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                throw new Error("Your browser or device does not support camera access.");
+            }
+
+            // Hide main upload options and reveal live camera viewfinder
+            if (uploadOptionsGrid) uploadOptionsGrid.style.display = "none";
+            if (cameraContainer) cameraContainer.style.display = "flex";
+
+            // Optimize constraints for back-facing high quality camera
+            const constraints = {
+                video: {
+                    facingMode: { ideal: "environment" },
+                    width: { ideal: 1280 },
+                    height: { ideal: 960 }
+                },
+                audio: false
+            };
+
+            activeStream = await navigator.mediaDevices.getUserMedia(constraints);
+            
+            if (cameraStream) {
+                cameraStream.srcObject = activeStream;
+                cameraStream.onloadedmetadata = () => {
+                    cameraStream.play().catch(e => console.error("Camera play failure:", e));
+                };
+            }
+
+        } catch (error) {
+            console.error("Camera access error:", error);
+            let userMessage = "Could not access the camera. ";
+            if (error.name === "NotAllowedError" || error.name === "PermissionDeniedError") {
+                userMessage += "Please grant camera permission in your browser or system settings.";
+            } else if (error.name === "NotFoundError" || error.name === "DevicesNotFoundError") {
+                userMessage += "No camera hardware detected on this device.";
+            } else {
+                userMessage += error.message || "Please check device capabilities.";
+            }
+
+            if (cameraErrorMsg) {
+                cameraErrorMsg.innerText = userMessage;
+                cameraErrorMsg.style.display = "block";
+            }
+
+            if (uploadOptionsGrid) uploadOptionsGrid.style.display = "grid";
+            if (cameraContainer) cameraContainer.style.display = "none";
+            
+            alert(userMessage);
+        }
+    }
+
+    /**
+     * Captures current stream frame from the video tag, maps it to a canvas,
+     * converts it to a standard JPEG image blob, and passes it to the preview.
+     */
+    function capturePhoto() {
+        if (!activeStream || !cameraStream) return;
+
+        const canvas = document.createElement("canvas");
+        const videoWidth = cameraStream.videoWidth || 640;
+        const videoHeight = cameraStream.videoHeight || 480;
+
+        canvas.width = videoWidth;
+        canvas.height = videoHeight;
+
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(cameraStream, 0, 0, videoWidth, videoHeight);
+
+        // Convert canvas image into high quality JPEG blob
+        canvas.toBlob((blob) => {
+            if (!blob) {
+                alert("Failed to capture picture. Please try again.");
+                return;
+            }
+
+            // Wrap blob in standard File object matching traditional file uploads
+            const file = new File([blob], "camera_capture.jpg", {
+                type: "image/jpeg",
+                lastModified: Date.now()
+            });
+
+            activeFile = file;
+
+            // Load captured stream into preview container
+            if (imgPreview) {
+                imgPreview.src = URL.createObjectURL(blob);
+            }
+            if (previewContainer) {
+                previewContainer.style.display = "block";
+            }
+            if (analyzeBtn) {
+                analyzeBtn.disabled = false;
+            }
+
+            // Close stream and release device camera resources
+            stopCamera();
+
+        }, "image/jpeg", 0.9);
+    }
+
+    /**
+     * Stop active camera stream tracks and release hardware lock.
+     */
+    function stopCamera() {
+        if (activeStream) {
+            activeStream.getTracks().forEach(track => track.stop());
+            activeStream = null;
+        }
+        if (cameraStream) {
+            cameraStream.srcObject = null;
+        }
+        if (cameraContainer) {
+            cameraContainer.style.display = "none";
+        }
+        if (uploadOptionsGrid) {
+            uploadOptionsGrid.style.display = "grid";
+        }
+    }
 
     // =====================================================================
     // DRAG AND DROP HANDLERS
@@ -68,11 +228,12 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     /**
-     * Resets the file upload area
+     * Resets the file upload area and releases active camera locks.
      */
     window.resetUpload = function() {
+        stopCamera();
         activeFile = null;
-        fileInput.value = "";
+        if (fileInput) fileInput.value = "";
         previewContainer.style.display = "none";
         analyzeBtn.disabled = true;
         resultPanel.style.display = "none";

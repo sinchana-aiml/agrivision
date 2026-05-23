@@ -1074,3 +1074,262 @@ tbody tr:hover td { background: #f4fbf6; }
     #agribot-widget { bottom: 1rem; right: 1rem; }
     .agribot-panel  { width: calc(100vw - 2rem); right: 0; }
 }
+
+/* =====================================================================
+   DUAL FILE UPLOAD / CAMERA CHOICE GRID
+   ===================================================================== */
+.upload-options-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+    margin-bottom: 1.2rem;
+    width: 100%;
+}
+
+@media (max-width: 600px) {
+    .upload-options-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.camera-zone {
+    border: 2px dashed var(--border);
+    border-radius: var(--radius);
+    padding: 2rem 1.5rem;
+    text-align: center;
+    cursor: pointer;
+    background: var(--surface-2);
+    transition: var(--transition);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 154px; /* match the approximate height of the drop zone */
+}
+
+.camera-zone:hover {
+    border-color: var(--green-accent);
+    background: #edf7f1;
+}
+
+.camera-zone-icon {
+    font-size: 2.2rem;
+    margin-bottom: 0.6rem;
+    transition: var(--transition);
+}
+
+.camera-zone:hover .camera-zone-icon {
+    transform: scale(1.1);
+}
+
+.camera-zone-text {
+    font-weight: 600;
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    margin-bottom: 0.2rem;
+}
+
+.camera-zone-hint {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+/* =====================================================================
+   PREMIUM LIVE VIEWPORT SCANNER HUD
+   ===================================================================== */
+.camera-container {
+    background: var(--green-deep);
+    border-radius: var(--radius);
+    padding: 1.75rem;
+    border: 1.5px solid var(--green-accent);
+    margin-bottom: 1.25rem;
+    animation: slideUp 0.35s cubic-bezier(0.4, 0, 0.2, 1) both;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: var(--shadow-lg);
+}
+
+.camera-stream-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 440px;
+    aspect-ratio: 4 / 3;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #000;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    border: 2px solid rgba(74, 222, 128, 0.4);
+}
+
+#camera-stream {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Scanning Overlay Guidelines */
+.camera-overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.focus-bracket {
+    position: absolute;
+    width: 32px;
+    height: 32px;
+    border: 3.5px solid var(--green-glow);
+    transition: var(--transition);
+}
+
+.focus-bracket.top-left {
+    top: 20%;
+    left: 20%;
+    border-right: none;
+    border-bottom: none;
+    border-top-left-radius: 8px;
+}
+
+.focus-bracket.top-right {
+    top: 20%;
+    right: 20%;
+    border-left: none;
+    border-bottom: none;
+    border-top-right-radius: 8px;
+}
+
+.focus-bracket.bottom-left {
+    bottom: 20%;
+    left: 20%;
+    border-right: none;
+    border-top: none;
+    border-bottom-left-radius: 8px;
+}
+
+.focus-bracket.bottom-right {
+    bottom: 20%;
+    right: 20%;
+    border-left: none;
+    border-top: none;
+    border-bottom-right-radius: 8px;
+}
+
+.camera-guideline {
+    color: var(--green-glow);
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    background: rgba(13, 43, 26, 0.85);
+    padding: 0.35rem 0.9rem;
+    border-radius: 9999px;
+    border: 1px solid rgba(74, 222, 128, 0.25);
+    margin-top: auto;
+    margin-bottom: 2.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    animation: pulseGlow 1.8s infinite alternate ease-in-out;
+}
+
+@keyframes pulseGlow {
+    from { opacity: 0.65; transform: scale(0.96); }
+    to { opacity: 1; transform: scale(1.02); }
+}
+
+/* Shutter & Cancel Controls */
+.camera-controls {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.25rem;
+    margin-top: 1.5rem;
+    width: 100%;
+}
+
+.btn-capture {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    outline: none;
+    transition: var(--transition);
+}
+
+.btn-capture-ring {
+    position: absolute;
+    inset: 0;
+    border: 4px solid var(--green-glow);
+    border-radius: 50%;
+    transition: var(--transition);
+    box-shadow: 0 0 12px rgba(74, 222, 128, 0.3);
+}
+
+.btn-capture-solid {
+    position: absolute;
+    width: 52px;
+    height: 52px;
+    background: #ffffff;
+    border-radius: 50%;
+    transition: var(--transition);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+}
+
+.btn-capture:hover .btn-capture-solid {
+    transform: scale(0.88);
+    background: var(--green-bright);
+}
+
+.btn-capture:hover .btn-capture-ring {
+    transform: scale(1.06);
+    border-color: #ffffff;
+    box-shadow: 0 0 16px rgba(255, 255, 255, 0.5);
+}
+
+.btn-capture:active .btn-capture-solid {
+    transform: scale(0.78);
+}
+
+.btn-close-camera {
+    background: rgba(220, 38, 38, 0.15);
+    color: #fca5a5;
+    border: 1px solid rgba(220, 38, 38, 0.35);
+    padding: 0.55rem 1.4rem;
+    border-radius: 8px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    font-family: 'Outfit', sans-serif;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.btn-close-camera:hover {
+    background: rgba(220, 38, 38, 0.35);
+    color: #ffffff;
+    border-color: rgba(220, 38, 38, 0.6);
+    box-shadow: 0 2px 8px rgba(220, 38, 38, 0.2);
+}
+
+.camera-error-msg {
+    margin-top: 1rem;
+    background: rgba(220, 38, 38, 0.12);
+    color: #fca5a5;
+    border: 1px solid rgba(220, 38, 38, 0.35);
+    padding: 0.8rem 1.2rem;
+    border-radius: 8px;
+    font-size: 0.82rem;
+    text-align: center;
+    max-width: 100%;
+    animation: fadeIn 0.25s ease-out;
+}
+

@@ -100,14 +100,49 @@
             </div>
 
             <div class="form-group">
-                <label>Upload Crop Leaf Photograph</label>
-                <div class="drop-zone" id="drop-zone">
-                    <div class="drop-zone-icon">📤</div>
-                    <p class="drop-zone-text">Drag & drop your leaf image here</p>
-                    <p class="drop-zone-hint">or click to browse — JPEG, PNG up to 10MB</p>
-                    <input type="file" id="image" accept="image/*" aria-label="Upload crop image file">
+                <label>Upload or Capture Crop Leaf Photograph</label>
+                <div class="upload-options-grid" id="upload-options-grid">
+                    <!-- Standard File Upload (Kept completely functional) -->
+                    <div class="drop-zone" id="drop-zone">
+                        <div class="drop-zone-icon">📤</div>
+                        <p class="drop-zone-text">Drag & drop your leaf image here</p>
+                        <p class="drop-zone-hint">or click to browse — JPEG, PNG up to 10MB</p>
+                        <input type="file" id="image" accept="image/*" aria-label="Upload crop image file">
+                    </div>
+                    
+                    <!-- New Camera Capture Card Option -->
+                    <div class="camera-zone" id="camera-zone">
+                        <div class="camera-zone-icon">📷</div>
+                        <p class="camera-zone-text">Take Live Camera Photo</p>
+                        <p class="camera-zone-hint">Click to capture from device camera</p>
+                    </div>
                 </div>
             </div>
+
+            <!-- Premium Camera Viewfinder HUD (Hidden by default) -->
+            <div class="camera-container" id="camera-container" style="display: none;">
+                <div class="camera-stream-wrapper">
+                    <video id="camera-stream" autoplay playsinline muted></video>
+                    <div class="camera-overlay">
+                        <div class="focus-bracket top-left"></div>
+                        <div class="focus-bracket top-right"></div>
+                        <div class="focus-bracket bottom-left"></div>
+                        <div class="focus-bracket bottom-right"></div>
+                        <div class="camera-guideline">Center the crop leaf here</div>
+                    </div>
+                </div>
+                <div class="camera-controls">
+                    <button type="button" class="btn-capture" id="capture-btn" aria-label="Capture Photo">
+                        <span class="btn-capture-ring"></span>
+                        <span class="btn-capture-solid"></span>
+                    </button>
+                    <button type="button" class="btn-close-camera" id="close-camera-btn">
+                        ✕ Cancel & Close Camera
+                    </button>
+                </div>
+                <div class="camera-error-msg" id="camera-error-msg" style="display: none;"></div>
+            </div>
+
 
             <div class="preview-container" id="preview-container">
                 <img src="#" alt="Uploaded leaf preview" class="image-preview" id="image-preview">
