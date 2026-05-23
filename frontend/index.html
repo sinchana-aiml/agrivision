@@ -6,6 +6,7 @@
     <meta name="description" content="AgriVision – AI-driven crop damage assessment and PMFBY insurance claims portal.">
     <title>AgriVision | PMFBY AI Crop Damage Assessment & GIS Portal</title>
     <link rel="stylesheet" href="/css/style.css">
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBgDbBWN9erHD47IHX51b_ZHdIs7jA0Jhg&libraries=places"></script>
 </head>
 <body>
 
@@ -180,16 +181,28 @@
                     <span class="loc-label">Longitude</span>
                     <span class="loc-value" id="gis-lon">Not Locked</span>
                 </div>
+                <div class="loc-row">
+                    <span class="loc-label">Address</span>
+                    <span class="loc-value" id="gis-address" style="font-family:inherit; font-size:0.78rem;">Not Locked</span>
+                </div>
             </div>
 
             <p class="subtitle">
                 * Coordinates are cryptographically stamped to prevent fraudulent submissions. GPS is acquired automatically during analysis.
             </p>
 
-            <div class="gis-map-mock">
-                <div class="gis-grid"></div>
-                <div class="gis-radar"></div>
-                <div class="gis-pin">📍</div>
+            <div id="google-map" style="width:100%; height:220px; border-radius:10px; border:1.5px solid var(--border); overflow:hidden;"></div>
+
+            <!-- Nearest Agriculture Office -->
+            <button class="btn btn-primary" id="find-office-btn" onclick="LocationService.findNearestOffice()" style="margin-top:1rem; display:none;">
+                🏛️ Find Nearest Agriculture Office
+            </button>
+
+            <div id="office-result" style="display:none; margin-top:0.75rem; padding:0.85rem 1rem; background:linear-gradient(135deg,#f0fdf4,#dcfce7); border:1.5px solid #86efac; border-radius:10px;">
+                <p style="font-size:0.82rem; font-weight:700; color:#15803d; margin-bottom:0.25rem;" id="office-name"></p>
+                <p style="font-size:0.75rem; color:#3a5c47;" id="office-address"></p>
+                <p style="font-size:0.75rem; color:#3a5c47; margin-top:0.2rem;" id="office-distance"></p>
+                <button onclick="LocationService.getDirections()" style="margin-top:0.5rem; padding:0.35rem 0.85rem; background:#2d7a4f; color:white; border:none; border-radius:7px; font-size:0.75rem; font-weight:700; cursor:pointer; font-family:inherit;">🗺️ Get Directions</button>
             </div>
         </section>
 
