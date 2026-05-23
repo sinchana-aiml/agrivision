@@ -121,9 +121,13 @@ document.addEventListener("DOMContentLoaded", () => {
                     const coords = await window.LocationService.getCurrentLocation();
                     
                     // Display details in GIS panel
-                    document.getElementById("gis-lat").innerText = coords.latitude.toFixed(4);
-                    document.getElementById("gis-lon").innerText = coords.longitude.toFixed(4);
-                    gpsStatusText.innerText = `Verified: Lat ${coords.latitude.toFixed(4)}, Lon ${coords.longitude.toFixed(4)}`;
+                    document.getElementById("gis-lat").innerText = coords.latitude.toFixed(6);
+                    document.getElementById("gis-lon").innerText = coords.longitude.toFixed(6);
+                    gpsStatusText.innerText = `✅ Verified: ${coords.latitude.toFixed(4)}, ${coords.longitude.toFixed(4)}`;
+                    gpsStatusText.style.color = "#16a34a";
+
+                    // Pin on real Google Map
+                    window.LocationService.pinOnMap(coords.latitude, coords.longitude);
 
                     // Send coordinates to link with the newly created claim
                     await window.LocationService.updateClaimLocation(
