@@ -267,6 +267,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 if (!response.ok) {
                     const err = await response.json();
+                    // Plant validation failure — show a styled inline warning
+                    // panel instead of a disruptive raw alert() popup.
+                    if (err.error === "invalid_plant") {
+                        renderInvalidPlantMessage(err.message);
+                        return;
+                    }
                     throw new Error(err.error || "Failed to process image.");
                 }
 
@@ -317,6 +323,20 @@ document.addEventListener("DOMContentLoaded", () => {
                 analyzeBtn.innerHTML = `<span>🔍</span> Re-Analyze Crop Health`;
             }
         });
+    }
+
+    /**
+     * Renders a styled amber warning panel when the uploaded image fails
+     * plant validation (non-plant image detected by the backend).
+     * Uses the existing result-panel element — no new DOM nodes needed.
+     * @param {string} message - User-friendly message returned by the backend.
+     */
+    function renderInvalidPlantMessage(message) {
+        resultPanel.className = "result-panel invalid"; // amber style
+        document.getElementById("panel-result-title").innerHTML =
+            `<span>⚠️</span> Invalid Image Detected`;
+        document.getElementById("panel-result-details").innerHTML = message;
+        resultPanel.style.display = "block";
     }
 
     /**

@@ -504,6 +504,14 @@ input[type="password"]:focus {
     border: 1.5px solid #fca5a5;
 }
 
+/* Invalid plant image — amber/warning state */
+.result-panel.invalid {
+    background: linear-gradient(135deg, #fffbeb, #fef3c7);
+    border: 1.5px solid #fcd34d;
+}
+
+.result-panel.invalid .result-title { color: #b45309; }
+
 .result-title {
     font-weight: 700;
     font-size: 1rem;

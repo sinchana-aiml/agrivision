@@ -10,6 +10,7 @@ from flask import Blueprint, request, jsonify
 # Modular Imports
 from backend.utils.image_processing import preprocess_image
 from backend.utils.damage_calc import format_percentage
+from backend.utils.plant_validation import is_plant_image
 from backend.models.model_loader import get_model
 from backend.database.firebase_config import ClaimsDatabase
 
@@ -29,8 +30,27 @@ def analyze():
     crop = request.form.get("crop", "Unknown")
 
     try:
-        # Preprocess the uploaded image file bytes
-        img_array = preprocess_image(file.read())
+        # Read bytes once — reused for both validation and preprocessing
+        image_bytes = file.read()
+
+        # ── Plant Validation Gate ─────────────────────────────────────────
+        # Reject non-plant images (faces, rooms, objects) before they reach
+        # the CNN model. Returns HTTP 422 with a structured error payload
+        # that the frontend intercepts to show a user-friendly message.
+        is_valid, green_ratio = is_plant_image(image_bytes)
+        if not is_valid:
+            logger.warning(
+                f"Plant validation rejected upload for crop '{crop}'. "
+                f"Green pixel ratio: {green_ratio} (threshold: 0.08)"
+            )
+            return jsonify({
+                "error": "invalid_plant",
+                "message": "Please upload a valid crop or leaf image."
+            }), 422
+        # ─────────────────────────────────────────────────────────────────
+
+        # Preprocess the validated image bytes for CNN input
+        img_array = preprocess_image(image_bytes)
         
         # Load the model (singleton loads only on first request)
         model = get_model()
