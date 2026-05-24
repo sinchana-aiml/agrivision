@@ -22,7 +22,7 @@ from PIL import Image
 # Minimum fraction of pixels that must be green-dominant for the image
 # to be accepted as a valid plant/leaf photo.
 # 0.08 = 8% — works well for most real-world crop leaf photos.
-GREEN_PIXEL_THRESHOLD = 0.08
+GREEN_PIXEL_THRESHOLD = 0.30
 
 
 def is_plant_image(image_bytes: bytes) -> tuple[bool, float]:
